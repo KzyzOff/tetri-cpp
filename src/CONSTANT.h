@@ -1,0 +1,11 @@
+
+#ifndef TETRIS_CPP_CONSTANT_H
+#define TETRIS_CPP_CONSTANT_H
+
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 800
+#define BOARD_WIDTH 12
+#define BOARD_HEIGHT 16
+#define BOARD_OFFSET 4
+
+#endif
