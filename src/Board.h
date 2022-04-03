@@ -13,6 +13,13 @@
 #include "Block.h"
 #include "Clock.h"
 
+struct TimeTick
+{
+    timetype base;
+    timetype current;
+    bool is_sped_up;
+};
+
 // TODO: Add score system
 // TODO: Add next block preview
 
@@ -27,6 +34,7 @@ public:
     [[nodiscard]] std::shared_ptr<Block> getCurrentBlockPtr() const;
     void update();
     void placeBlockDown();
+    void toggleSpeedUp();
 
     void debugDraw() const;
 
@@ -42,7 +50,9 @@ private:
     std::vector<celltype> m_fields;
     std::shared_ptr<Block> m_current_block;
     Clock m_clock;
-    timetype m_tick_ms;
+    scoreType m_score;
+
+    TimeTick m_tick;
 
 };
 

@@ -6,7 +6,8 @@ Board::Board()
       m_current_block(nullptr),
       m_patterns({Pattern::L, Pattern::J, Pattern::I, Pattern::Z, Pattern::S, Pattern::T, Pattern::T, Pattern::O}),
       m_fields({}),
-      m_tick_ms(800)
+      m_tick({800, 800, false}),
+      m_score(0)
 {
     m_fields.clear();
     m_fields.resize(BOARD_WIDTH * (BOARD_HEIGHT + BOARD_OFFSET));
@@ -22,9 +23,6 @@ Board::Board()
     }
 
     generateBlock();
-//    m_current_block = std::make_shared<Block>(Block(Pattern::O, {4, 0}));
-//    m_current_block->move(getBoardWithCurrentBlock(), Direction::LEFT);
-//    m_current_block->rotate(getBoardWithCurrentBlock(), true);
 
     // Start the clock
     m_clock.start();
@@ -37,7 +35,7 @@ void Board::update()
 
 void Board::updateBoard()
 {
-    if (m_clock.duration() < m_tick_ms)
+    if (m_clock.duration() < m_tick.current)
         return;
 
     if (Block::canMove(m_fields, m_current_block.get(), Direction::DOWN))
@@ -64,6 +62,15 @@ void Board::placeBlockDown()
     solidifyBlock();
     checkForFullLines();
     generateBlock();
+}
+
+void Board::toggleSpeedUp()
+{
+    if (!m_tick.is_sped_up)
+        m_tick.current = m_tick.base / 2;
+    else
+        m_tick.current = m_tick.base;
+    m_tick.is_sped_up = !m_tick.is_sped_up;
 }
 
 void Board::generateBlock()
@@ -139,7 +146,7 @@ void Board::moveSolidBlocksDown(rowNumType lowest_row)
 
 void Board::setTickMS(timetype tick_ms)
 {
-    m_tick_ms = tick_ms;
+    m_tick.base = tick_ms;
 }
 
 std::vector<celltype> Board::getBoardWithCurrentBlock() const

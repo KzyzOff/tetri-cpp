@@ -67,6 +67,21 @@ void BoardInputHandler::handleEvents(SDL_Event& event, Board& board)
                 return;
             }
             break;
+
+        case SDLK_DOWN:
+            if (event.type == SDL_KEYDOWN && !m_down_flag)
+            {
+                m_down_flag = !m_down_flag;
+                board.toggleSpeedUp();
+                return;
+            }
+            if (event.type == SDL_KEYUP && m_down_flag)
+            {
+                m_down_flag = !m_down_flag;
+                board.toggleSpeedUp();
+                return;
+            }
+            break;
     }
 
 }

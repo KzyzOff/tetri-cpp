@@ -7,5 +7,6 @@
 using celltype      = char;
 using timetype      = Uint64;
 using rowNumType    = int;
+using scoreType     = Uint16;
 
 #endif
