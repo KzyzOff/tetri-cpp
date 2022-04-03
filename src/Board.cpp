@@ -6,7 +6,7 @@ Board::Board()
       m_current_block(nullptr),
       m_patterns({Pattern::L, Pattern::J, Pattern::I, Pattern::Z, Pattern::S, Pattern::T, Pattern::T, Pattern::O}),
       m_fields({}),
-      m_tick_ms(200)
+      m_tick_ms(800)
 {
     m_fields.clear();
     m_fields.resize(BOARD_WIDTH * (BOARD_HEIGHT + BOARD_OFFSET));
@@ -31,6 +31,11 @@ Board::Board()
 }
 
 void Board::update()
+{
+    updateBoard();
+}
+
+void Board::updateBoard()
 {
     if (m_clock.duration() < m_tick_ms)
         return;
@@ -88,11 +93,14 @@ void Board::solidifyBlock()
 
 void Board::checkForFullLines()
 {
-    for (int row = BOARD_OFFSET; row < BOARD_HEIGHT + BOARD_OFFSET; row++)
+    for (int row = BOARD_OFFSET; row < BOARD_HEIGHT + BOARD_OFFSET - 1; row++)
     {
         bool isFull = true;
         for (int cell_in_row_idx = 0; cell_in_row_idx < BOARD_WIDTH; cell_in_row_idx++)
         {
+            if (m_fields.at(cell_in_row_idx + row * BOARD_WIDTH) == '#')
+                continue;
+
             if (m_fields.at(cell_in_row_idx + row * BOARD_WIDTH) == ' ')
             {
                 isFull = false;
@@ -110,7 +118,7 @@ void Board::checkForFullLines()
 
 void Board::removeRow(rowNumType row)
 {
-    for (int i = 0; i < BOARD_WIDTH; i++)
+    for (int i = 1; i < BOARD_WIDTH - 1; i++)
     {
         m_fields.at(i + row * BOARD_WIDTH) = ' ';
     }
@@ -118,7 +126,15 @@ void Board::removeRow(rowNumType row)
 
 void Board::moveSolidBlocksDown(rowNumType lowest_row)
 {
-    // TODO: iterate backwards, starting from lowest_row
+    for (;lowest_row > BOARD_OFFSET - 1; lowest_row--)
+    {
+        for (int cell_in_row_idx = 1; cell_in_row_idx < BOARD_WIDTH - 1; cell_in_row_idx++)
+        {
+            int current_idx = cell_in_row_idx + lowest_row * BOARD_WIDTH;
+            m_fields.at(current_idx + BOARD_WIDTH) = m_fields.at(current_idx);
+            m_fields.at(current_idx) = ' ';
+        }
+    }
 }
 
 void Board::setTickMS(timetype tick_ms)

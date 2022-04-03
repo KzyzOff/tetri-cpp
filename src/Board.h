@@ -13,6 +13,9 @@
 #include "Block.h"
 #include "Clock.h"
 
+// TODO: Add score system
+// TODO: Add next block preview
+
 class Board {
 public:
     Board();
@@ -28,6 +31,7 @@ public:
     void debugDraw() const;
 
 private:
+    void updateBoard();
     void generateBlock();
     void solidifyBlock();
     void checkForFullLines();
