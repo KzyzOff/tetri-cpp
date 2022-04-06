@@ -7,6 +7,7 @@ Board::Board()
       m_patterns({Pattern::L, Pattern::J, Pattern::I, Pattern::Z, Pattern::S, Pattern::T, Pattern::T, Pattern::O}),
       m_fields({}),
       m_tick({800, 800, false}),
+      m_next_block_idx(-1),
       m_score(0)
 {
     m_fields.clear();
@@ -22,9 +23,8 @@ Board::Board()
         }
     }
 
-    generateBlock();
+    genBlockAndNext();
 
-    // Start the clock
     m_clock.start();
 }
 
@@ -45,8 +45,8 @@ void Board::updateBoard()
     else
     {
         solidifyBlock();
-        checkForFullLines();
-        generateBlock();
+        removeFullRows();
+        genBlockAndNext();
     }
 
     m_clock.init();
@@ -60,8 +60,8 @@ void Board::placeBlockDown()
         m_current_block->move(m_fields, Direction::DOWN);
     }
     solidifyBlock();
-    checkForFullLines();
-    generateBlock();
+    removeFullRows();
+    genBlockAndNext();
 }
 
 void Board::toggleSpeedUp()
@@ -73,14 +73,20 @@ void Board::toggleSpeedUp()
     m_tick.is_sped_up = !m_tick.is_sped_up;
 }
 
-void Board::generateBlock()
+void Board::genBlockAndNext()
 {
     std::random_device r;
     std::default_random_engine generator(r());
-    std::uniform_int_distribution<size_t> distribution(0, (int)m_patterns.size() - 1);
-    size_t idx = distribution(generator);
+    std::uniform_int_distribution<size_t> distribution(0, static_cast<int>(m_patterns.size() - 1));
 
-    m_current_block = std::make_shared<Block>(Block(m_patterns.at(idx), {BOARD_WIDTH / 2 - 2, 0}));
+    if (m_next_block_idx == -1) {
+        size_t idx = distribution(generator);
+        m_current_block = std::make_shared<Block>(Block(m_patterns.at(idx), {BOARD_WIDTH / 2 - 2, 0}));
+    }
+    else
+        m_current_block = std::make_shared<Block>(Block(m_patterns.at(m_next_block_idx), {BOARD_WIDTH / 2 - 2, 0}));
+
+    m_next_block_idx = distribution(generator);
 }
 
 void Board::solidifyBlock()
@@ -98,7 +104,7 @@ void Board::solidifyBlock()
     }
 }
 
-void Board::checkForFullLines()
+void Board::removeFullRows()
 {
     for (int row = BOARD_OFFSET; row < BOARD_HEIGHT + BOARD_OFFSET - 1; row++)
     {
@@ -183,6 +189,11 @@ std::vector<celltype> Board::getBoard() const
 std::shared_ptr<Block> Board::getCurrentBlockPtr() const
 {
     return m_current_block;
+}
+
+std::vector<celltype> Board::getNextBlockPattern() const
+{
+    return {m_patterns.at(m_next_block_idx).begin(), m_patterns.at(m_next_block_idx).end()};
 }
 
 void Board::debugDraw() const

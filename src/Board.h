@@ -21,7 +21,6 @@ struct TimeTick
 };
 
 // TODO: Add score system
-// TODO: Add next block preview
 
 class Board {
 public:
@@ -32,6 +31,7 @@ public:
     [[nodiscard]] std::vector<celltype> getBoardWithCurrentBlock() const;
     [[nodiscard]] std::vector<celltype> getBoard() const;
     [[nodiscard]] std::shared_ptr<Block> getCurrentBlockPtr() const;
+    [[nodiscard]] std::vector<celltype> getNextBlockPattern() const;
     void update();
     void placeBlockDown();
     void toggleSpeedUp();
@@ -40,18 +40,18 @@ public:
 
 private:
     void updateBoard();
-    void generateBlock();
+    void genBlockAndNext();
     void solidifyBlock();
-    void checkForFullLines();
+    void removeFullRows();
     void removeRow(rowNumType row);
     void moveSolidBlocksDown(rowNumType lowest_row);
 
     std::vector<std::array<celltype, 16>> m_patterns;
     std::vector<celltype> m_fields;
     std::shared_ptr<Block> m_current_block;
-    Clock m_clock;
+    size_t m_next_block_idx;
     scoreType m_score;
-
+    Clock m_clock;
     TimeTick m_tick;
 
 };
