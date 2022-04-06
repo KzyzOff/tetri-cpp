@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "header.h"
+#include "FontManager.h"
 #include "Controller.h"
 #include "Board.h"
 #include "BoardView.h"
@@ -19,6 +20,7 @@ public:
     void handleEvents(SDL_Event& ev) override;
 
 private:
+    FontManager m_font_mgr;
     BoardInputHandler m_input_handler;
     Board m_board;
     BoardView m_view;

@@ -2,9 +2,10 @@
 #include "BoardController.h"
 
 BoardController::BoardController()
-    : m_input_handler(BoardInputHandler()),
+    : m_font_mgr(FontManager("../assets/VCR_OSD_MONO.ttf")),
+      m_input_handler(BoardInputHandler()),
       m_board(Board()),
-      m_view(m_board) {}
+      m_view(m_board, m_font_mgr) {}
 
 void BoardController::update()
 {

@@ -1,10 +1,12 @@
 
 #include "BoardView.h"
 
-BoardView::BoardView(Board& board)
-    : m_board(board),
+BoardView::BoardView(Board& board, FontManager& fm)
+    : m_font_mgr(fm),
+      m_board(board),
       m_cell_size(0),
-      m_tlc({0, 0})
+      m_tlc({0, 0}),
+      m_score_pos({0, 0})
 {
     setBoardSizingAndPos();
 }
@@ -26,12 +28,13 @@ void BoardView::setBoardSizingAndPos()
     }
 
     setPreviewSizingAndPos(m_cell_size);
+    setScoreSizingAndPos({m_tlc.x + m_cell_size * BOARD_WIDTH + 40, m_cell_size});
 }
 
-void BoardView::setPreviewSizingAndPos(int cell_size)
+void BoardView::setPreviewSizingAndPos(int board_cell_size)
 {
     int size = static_cast<int>(m_tlc.x / 4);
-    Vec2i tlc {m_tlc.x / 2 - size * 2, cell_size * 3};
+    Vec2i tlc {m_tlc.x / 2 - size * 2, board_cell_size * 3};
 
     m_preview_grid.clear();
     for (int y = 0; y < 4; y++)
@@ -44,6 +47,13 @@ void BoardView::setPreviewSizingAndPos(int cell_size)
     }
 }
 
+void BoardView::setScoreSizingAndPos(Vec2i board_trc_pos)
+{
+    m_font_mgr.setSize(30);
+    m_font_mgr.setColor(Color::orange);
+    m_score_pos = {board_trc_pos.x, board_trc_pos.y + 30};
+}
+
 void BoardView::draw(SDL_Renderer* renderer)
 {
     for (const auto& cell : m_grid)
@@ -52,6 +62,7 @@ void BoardView::draw(SDL_Renderer* renderer)
     }
 
     drawNextBlockPreview(renderer);
+    drawScore(renderer);
 }
 
 void BoardView::drawNextBlockPreview(SDL_Renderer* renderer)
@@ -60,6 +71,11 @@ void BoardView::drawNextBlockPreview(SDL_Renderer* renderer)
     {
         cell.draw(renderer);
     }
+}
+
+void BoardView::drawScore(SDL_Renderer *renderer)
+{
+    m_font_mgr.draw(renderer, m_score_pos.x, m_score_pos.y, std::to_string(m_board.getScore()));
 }
 
 SDL_Color BoardView::getCellColor(celltype cell) const
@@ -92,7 +108,7 @@ SDL_Color BoardView::getCellColor(celltype cell) const
             color = Color::magenta;
             break;
         default:
-            color = Color::dark_gray;
+            color = Color::light_gray;
             break;
     }
 

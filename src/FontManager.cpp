@@ -9,6 +9,12 @@ FontManager::FontManager(const std::string &file)
 	if (TTF_Init() != -1)
 	{
 		m_font = TTF_OpenFont(file.c_str(), m_size);
+        if (!m_font)
+        {
+            printf("Font not found\n");
+            exit(-1);
+        }
+
         printf("Font loaded successfully!\n");
 	}
 }

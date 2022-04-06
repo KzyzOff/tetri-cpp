@@ -47,10 +47,17 @@ void Board::updateBoard()
         solidifyBlock();
         removeFullRows();
         genBlockAndNext();
+        updateTimeTick();
     }
 
     m_clock.init();
     m_clock.start();
+}
+
+void Board::updateTimeTick()
+{
+    if (m_tick.base > 200)
+        m_tick.base = 800 - m_score / 18;
 }
 
 void Board::placeBlockDown()
@@ -106,6 +113,7 @@ void Board::solidifyBlock()
 
 void Board::removeFullRows()
 {
+    int removed_rows = 0;
     for (int row = BOARD_OFFSET; row < BOARD_HEIGHT + BOARD_OFFSET - 1; row++)
     {
         bool isFull = true;
@@ -125,8 +133,12 @@ void Board::removeFullRows()
         {
             removeRow(row);
             moveSolidBlocksDown(row - 1);
+            removed_rows++;
         }
     }
+
+    if (removed_rows > 0)
+        m_score += removed_rows * 100;
 }
 
 void Board::removeRow(rowNumType row)
@@ -194,6 +206,11 @@ std::shared_ptr<Block> Board::getCurrentBlockPtr() const
 std::vector<celltype> Board::getNextBlockPattern() const
 {
     return {m_patterns.at(m_next_block_idx).begin(), m_patterns.at(m_next_block_idx).end()};
+}
+
+int Board::getScore() const
+{
+    return m_score;
 }
 
 void Board::debugDraw() const

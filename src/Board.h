@@ -32,6 +32,7 @@ public:
     [[nodiscard]] std::vector<celltype> getBoard() const;
     [[nodiscard]] std::shared_ptr<Block> getCurrentBlockPtr() const;
     [[nodiscard]] std::vector<celltype> getNextBlockPattern() const;
+    [[nodiscard]] int getScore() const;
     void update();
     void placeBlockDown();
     void toggleSpeedUp();
@@ -40,6 +41,7 @@ public:
 
 private:
     void updateBoard();
+    void updateTimeTick();
     void genBlockAndNext();
     void solidifyBlock();
     void removeFullRows();
